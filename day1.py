@@ -1,3 +1,5 @@
+import sys
+
 replacements = {'one': '1',
                 'two': '2',
                 'three': '3',
@@ -10,16 +12,18 @@ replacements = {'one': '1',
 
 
 def first_digit_index(s):
+    index = -1
     for i, c in enumerate(line):
         if c.isdigit():
             return i
+    return index
 
 
 def last_digit_index(s):
     index = -1
     for i, c in enumerate(line):
         if c.isdigit():
-            i = i
+            index = i
     return index
 
 
@@ -31,7 +35,7 @@ if __name__ == '__main__':
         for line in lines:
             firstDigitIndex = first_digit_index(line)
             lastDigitIndex = last_digit_index(line)
-            firstLetterDigitIndex = 10000
+            firstLetterDigitIndex = sys.maxsize
             lastLetterDigitIndex = -1
             firstLetterDigitNumber = ''
             lastLetterDigitNumber = ''
@@ -57,10 +61,14 @@ if __name__ == '__main__':
 
             line = ''.join(filter(str.isdigit, line))
 
-            if len(line) > 2:
-                line = line[0] + line[len(line) - 1]
-            elif len(line) == 1:
-                line *= 2
+            length = len(line)
+            if length == 0:
+                print('Error when parsing a line: no value found!')
+                continue
+            if length == 1:
+                line += line  # Single digit is both the first and the last.
+            elif length > 2:
+                line = line[0] + line[length - 1]
 
             result += int(line)
 
