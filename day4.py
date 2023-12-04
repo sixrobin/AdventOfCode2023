@@ -9,7 +9,7 @@ if __name__ == '__main__':
             winning_numbers_count = sum(map(lambda x: x in numbers_split[0].split(), numbers_split[1].split()))
 
             if winning_numbers_count > 0:
-                points_sum += pow(2, winning_numbers_count - 1)
+                points_sum += 2**(winning_numbers_count - 1)
                 for j in range(i + 1, i + winning_numbers_count + 1):
                     cards_counts[j] += cards_counts[i]
 
