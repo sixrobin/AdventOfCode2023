@@ -17,9 +17,7 @@ def parse_seeds(seeds_lines):
 
 def parse_map(map_line):
     map_data = [int(x) for x in map_line.split(' ')]
-    src_min, src_max = map_data[1], map_data[1] + map_data[2] - 1
-    dst_min, dst_max = map_data[0], map_data[0] + map_data[2] - 1
-    return [src_min, src_max, dst_min, dst_max]
+    return map_data[0], map_data[1], map_data[2]
 
 
 if __name__ == '__main__':
@@ -40,15 +38,17 @@ if __name__ == '__main__':
             elif last_map_key != '':
                 maps[last_map_key].append(parse_map(line))
 
-        # Process each seed through all maps.
-        for s in seeds:
-            result = s
-            for k, v in maps.items():
-                for m in v:
-                    if m[0] <= result <= m[1]:
-                        result = result + m[2] - m[0]
+        # Make each map process all seeds.
+        for k, v in maps.items():
+            result = []
+            for s in seeds:
+                for dst, src, rl in v:
+                    if src <= s < src + rl:
+                        result.append(s - src + dst)
                         break
+                else:
+                    result.append(s)
 
-            lowest_location = min(lowest_location, result)
+            seeds = result
 
-        print(f'Lowest location: {lowest_location}')
+        print(min(seeds))
