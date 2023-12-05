@@ -1,17 +1,8 @@
-import sys
-
-
 def parse_seeds(seeds_lines):
     seeds_data = [int(x) for x in seeds_lines.split(': ')[1].split()]
-
-    return seeds_data  # Part 1.
-
-    # Part 2. TODO: Technically works, but does take too long to compute.
     seeds_range_data = []
-    for i in range(len(seeds_data) // 2):
-        for x in range(seeds_data[i * 2 + 1]):
-            seeds_range_data.append(seeds_data[i * 2] + x)
-
+    for i in range(0, len(seeds_data), 2):
+        seeds_range_data.append((seeds_data[i], seeds_data[i] + seeds_data[i + 1]))
     return seeds_range_data
 
 
@@ -26,7 +17,6 @@ if __name__ == '__main__':
         seeds = parse_seeds(lines[0])
         maps = {}
         last_map_key = ''
-        lowest_location = sys.maxsize
 
         # Parse maps.
         for line in lines:
@@ -41,14 +31,20 @@ if __name__ == '__main__':
         # Make each map process all seeds.
         for k, v in maps.items():
             result = []
-            for s in seeds:
+            while seeds:
+                sa, sb = seeds.pop()
                 for dst, src, rl in v:
-                    if src <= s < src + rl:
-                        result.append(s - src + dst)
+                    intersect_start, intersect_end = max(sa, src), min(sb, src + rl)
+                    if intersect_start < intersect_end:  # Intersection between ranges.
+                        result.append((intersect_start - src + dst, intersect_end - src + dst))  # Shift using map.
+                        if intersect_start > sa:
+                            seeds.append((sa, intersect_start))  # Left part still need to be computed.
+                        if intersect_end < sb:
+                            seeds.append((intersect_end, sb))  # Right part still need to be computed.
                         break
                 else:
-                    result.append(s)
+                    result.append((sa, sb))  # No intersection with any range, no remapping for next map.
 
             seeds = result
 
-        print(min(seeds))
+        print(min(result))
