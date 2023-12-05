@@ -47,4 +47,4 @@ if __name__ == '__main__':
 
             seeds = result
 
-        print(min(result))
+        print(min(result)[0])
