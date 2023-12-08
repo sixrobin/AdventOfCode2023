@@ -1,4 +1,5 @@
 import functools
+from collections import Counter
 
 symbols_order = 'J23456789TQKA'
 pattern_to_type = ['11111', '1112', '122', '113', '23', '14', '5']
@@ -40,52 +41,25 @@ def replace_jokers_with_card(h, c):
 
 def replace_jokers(h):
     nh = h.copy()
-    jokers_count = nh.count('J')
+    counter = Counter(nh)
+    jokers_count = counter['J']
     if jokers_count == 0:
         return nh
 
-    t = hand_type(nh)
+    counter.pop('J')
 
-    # For one joker only, it's okay to try out every hand and keep the best one.
-    if jokers_count == 1:
-        joker_index = nh.index('J')
-        best_card = symbols_order[0]
-        nh[joker_index] = best_card
-        best_type = hand_type(nh)
-        for c in range(len(symbols_order)):
-            if symbols_order[c] == 'J':
-                continue
-            nh[joker_index] = symbols_order[c]
-            t = hand_type(nh)
-            if t > best_type:
-                best_card = symbols_order[c]
-                best_type = t
-            elif t == best_type:
-                best_card = symbols_order[c]
-        nh[joker_index] = best_card
-        return nh
+    # Find the card with the most occurrences, to replace jokers with it.
+    # If two cards have the same occurrences count, use the best of the two.
+    card = 'J'
+    for c, o in counter.items():
+        if o > counter[card] or (o == counter[card] and symbols_order.index(c) > symbols_order.index(card)):
+            card = c
 
-    elif jokers_count == 2 and t != 1:
-        if t == 4:  # Full house with 2 jokers, replace them to get five of a kind.
-            replace_jokers_with_card(nh, next(other_card for other_card in nh if other_card != 'J'))
-        elif t == 2:  # Two pairs, replace them the get four of a kind.
-            other_cards = [c for ic, c in enumerate(nh) if c != 'J']
-            replacement_card = other_cards[0]
-            if other_cards.count(other_cards[1]) >= 2:
-                replacement_card = other_cards[1]
-            replace_jokers_with_card(nh, replacement_card)
-        return nh
+    if card == 'J':
+        card = symbols_order[-1]
 
-    # In every other cases, replace jokers with best card in hand, or by aces for a full jokers hand.
-    else:
-        best_card = symbols_order[0]
-        for c in nh:
-            if c != 'J' and symbols_order.index(c) > symbols_order.index(best_card):
-                best_card = c
-        if best_card == 'J':
-            best_card = symbols_order[-1]
-        replace_jokers_with_card(nh, best_card)
-        return nh
+    replace_jokers_with_card(nh, card)
+    return nh
 
 
 if __name__ == '__main__':
