@@ -42,6 +42,33 @@ def try_move(px, py, dx, dy):
     return px, py, dx, dy
 
 
+def point_left_to_seg(ax, ay, bx, by, px, py):
+    factor = (by - ay) * (px - ax) - (py - ay) * (bx - ax)
+    if factor > 0:
+        return 1
+    elif factor < 0:
+        return -1
+    else:
+        return 0
+
+
+def winding_number(polygon, pt):
+    wn = 0
+    ptx, pty = pt[0], pt[1]
+
+    for i in range(len(polygon) - 1):
+        if polygon[i][0] <= ptx:
+            if polygon[i + 1][0] > ptx:
+                if point_left_to_seg(polygon[i][0], polygon[i][1], polygon[i + 1][0], polygon[i + 1][1], ptx, pty) > 0:
+                    wn += 1
+        else:
+            if polygon[i + 1][0] <= ptx:
+                if point_left_to_seg(polygon[i][0], polygon[i][1], polygon[i + 1][0], polygon[i + 1][1], ptx, pty) < 0:
+                    wn -= 1
+
+    return wn
+
+
 if __name__ == '__main__':
     with open('input_day10.txt') as file:
         lines = file.read().splitlines()
@@ -52,8 +79,7 @@ if __name__ == '__main__':
         for y in range(h):
             for x in range(w):
                 if lines[y][x] == 'S':
-                    sx = x
-                    sy = y
+                    sx, sy = x, y
                     break
             if sx != -1 and sy != -1:
                 break
@@ -74,5 +100,12 @@ if __name__ == '__main__':
 
         dir_x, dir_y = new_dx, new_dy
 
+    pts_inside_loop = 0
+    for y in range(h):
+        for x in range(w):
+            if (x, y) not in path and winding_number(path, (x, y)) != 0:
+                pts_inside_loop += 1
+
     furthest_point_index = len(path) // 2
     print(f'Path traced with {len(path)} points (farthest index: {furthest_point_index}).')
+    print(f'{pts_inside_loop} points are nested inside the path.')
