@@ -6,14 +6,7 @@ pattern_to_type = ['11111', '1112', '122', '113', '23', '14', '5']
 
 
 def hand_type(h):
-    cards = {}
-    for c in h:
-        if c in cards:
-            cards[c] += 1
-        else:
-            cards[c] = 1
-
-    counts = list(cards.values())
+    counts = list(Counter(h).values())
     counts.sort()
     pattern = ''.join([str(count) for count in counts])
     return pattern_to_type.index(pattern)
