@@ -4,14 +4,17 @@ if __name__ == '__main__':
 
         horizontal = 0
         depth = 0
+        aim = 0
 
         for line in lines:
             move = line.split()
+            number = int(move[1])
             if move[0] == 'forward':
-                horizontal += int(move[1])
+                horizontal += number
+                depth += aim * number
             elif move[0] == 'down':
-                depth += int(move[1])
+                aim += number
             elif move[0] == 'up':
-                depth -= int(move[1])
+                aim -= number
 
-        print(f'Part 1: {horizontal * depth}')
+        print(horizontal * depth)
