@@ -22,7 +22,8 @@ if __name__ == '__main__':
                 current_board = []
                 continue
 
-        winning_board_index = -1
+        winning_boards_order = []
+        winning_number = -1
         current_number = -1
 
         for n in numbers:
@@ -30,6 +31,9 @@ if __name__ == '__main__':
 
             # Mark number.
             for b in range(len(boards)):
+                if b in winning_boards_order:
+                    continue
+
                 board = boards[b]
                 for bx in range(len(board)):
                     for by in range(len(board[bx])):
@@ -38,6 +42,9 @@ if __name__ == '__main__':
 
             # Bingo check.
             for b in range(len(boards)):
+                if b in winning_boards_order:
+                    continue
+
                 board = boards[b]
 
                 bingo_sum = 0
@@ -64,21 +71,31 @@ if __name__ == '__main__':
                             break
 
                 if bingo_sum == 5:
-                    winning_board_index = b
-                    break
+                    winning_boards_order.append(b)
+                    if len(winning_boards_order) == 1:
+                        winning_number = current_number
 
-            if winning_board_index > -1:
+            if len(winning_boards_order) == len(boards):
                 break
 
         # Unmarked numbers sum.
-        winning_board = boards[winning_board_index]
-        unmarked_numbers_sum = 0
+        winning_board = boards[winning_boards_order[0]]
+        winning_board_unmarked_numbers_sum = 0
         for x in range(5):
             for y in range(5):
                 if winning_board[x][y][1] == 0:
-                    unmarked_numbers_sum += winning_board[x][y][0]
+                    winning_board_unmarked_numbers_sum += winning_board[x][y][0]
 
-        print(f'Winning board index: {winning_board_index}')
-        print(f'Winning number: {current_number}')
-        print(f'Unmarked numbers sum: {unmarked_numbers_sum}')
-        print(f'Winning board score: {current_number * unmarked_numbers_sum}')
+        last_board = boards[winning_boards_order[len(winning_boards_order) - 1]]
+        last_board_unmarked_numbers_sum = 0
+        for x in range(5):
+            for y in range(5):
+                if last_board[x][y][1] == 0:
+                    last_board_unmarked_numbers_sum += last_board[x][y][0]
+
+        print(f'Winning number: {winning_number}')
+        print(f'Last number: {current_number}')
+        print(f'Winning board unmarked numbers sum: {winning_board_unmarked_numbers_sum}')
+        print(f'Last board unmarked numbers sum: {last_board_unmarked_numbers_sum}')
+        print(f'Winning board score: {winning_number * winning_board_unmarked_numbers_sum}')
+        print(f'Last board score: {current_number * last_board_unmarked_numbers_sum}')
