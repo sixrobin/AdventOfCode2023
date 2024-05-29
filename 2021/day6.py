@@ -6,7 +6,7 @@ if __name__ == '__main__':
         for fish in init_state.split(','):
             state[int(fish)] += 1
 
-        for _ in range(80):
+        for day in range(256):
             prev_zeros = state[0]
 
             for i in range(8):
@@ -15,4 +15,7 @@ if __name__ == '__main__':
             state[8] = prev_zeros
             state[6] += prev_zeros
 
-        print(f'Fishes after 80 days: {sum(state)}')
+            if day == 79:
+                print(f'Fishes after 80 days: {sum(state)}')
+            elif day == 255:
+                print(f'Fishes after 256 days: {sum(state)}')
